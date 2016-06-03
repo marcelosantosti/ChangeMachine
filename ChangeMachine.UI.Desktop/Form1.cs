@@ -46,32 +46,37 @@ namespace ChangeMachine.UI.Desktop
             EvaluateChangeRequest request = new EvaluateChangeRequest(inputAmountInCents, priceAmountInCents);
             EvaluateChangeResponse change = changeMachineManager.EvaluateChange(request);
 
-            if (change.HasError)
+            if (change.IsSuccess == false)
             {
                 UxListCoinCollection.Items.Clear();
 
-                foreach (Error error in change.ErrorList)
+                foreach (Report error in change.OperationReport)
                 {
-                    UxListCoinCollection.Items.Add(string.Format("ERROR: {0}: {1}", error.Property, error.MensagemError));
+                    UxListCoinCollection.Items.Add(string.Format("ERROR: {0}: {1}", error.Property, error.Message));
                 }
             }
             else
             {
-                ICollection<long> coinsCollection = change.CoinCollection;
-
                 UxListCoinCollection.Items.Clear();
-
-                List<Coin> queryGroupCoins = coinsCollection.GroupBy(coin => coin)
-                    .Select(coin => new Coin(coin.Key, coin.Count()))
-                    .OrderByDescending(coin => coin.Amount).ToList();
-
-                foreach (Coin coinGroup in queryGroupCoins)
-                {
-                    decimal coinValue = ConvertCentsToReal(coinGroup.Amount);
-                    UxListCoinCollection.Items.Add(string.Format("{0} x {1}", coinGroup.Count, coinValue.ToString("C")));
-                }
+                UxListCoinCollection.Items.Add("Bills");
+                PopulateChangeList(UxListCoinCollection, change.BillCollection);
+                UxListCoinCollection.Items.Add("Coins");
+                PopulateChangeList(UxListCoinCollection, change.CoinCollection);
 
                 UxListCoinCollection.Items.Add(string.Format("Total change: {0}", ConvertCentsToReal(change.TotalAmountInCents).ToString("C")));
+            }
+        }
+
+        private void PopulateChangeList(ListBox uiList, ICollection<long> coinsCollection)
+        {
+            List<Coin> queryGroupCoins = coinsCollection.GroupBy(coin => coin)
+                .Select(coin => new Coin(coin.Key, coin.Count()))
+                .OrderByDescending(coin => coin.Amount).ToList();
+
+            foreach (Coin coinGroup in queryGroupCoins)
+            {
+                decimal coinValue = ConvertCentsToReal(coinGroup.Amount);
+                uiList.Items.Add(string.Format("{0} x {1}", coinGroup.Count, coinValue.ToString("C")));
             }
         }
 

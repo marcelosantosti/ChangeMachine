@@ -6,26 +6,16 @@ using System.Threading.Tasks;
 
 namespace ChangeMachine.Core.DataContract
 {
-    public class EvaluateChangeResponse
+    public sealed class EvaluateChangeResponse : AbstractResponse
     {
         public long TotalAmountInCents { get; set; }
 
+        public List<long> BillCollection { get; set; }
         public List<long> CoinCollection { get; set; }
 
-        public Boolean HasError
+        public EvaluateChangeResponse() : base()
         {
-            get
-            {
-                return ErrorList.Count > 0;
-            }
-            
-        }
 
-        public List<Error> ErrorList { get; set; }
-
-        public EvaluateChangeResponse()
-        {
-            this.ErrorList = new List<Error>();
         }
     }
 }

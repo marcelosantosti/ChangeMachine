@@ -1,10 +1,15 @@
 ﻿
 namespace ChangeMachine.Core.DataContract
 {
-    public class EvaluateChangeRequest : AbstractRequest
+    public sealed class EvaluateChangeRequest : AbstractRequest
     {
         public long InputAmount { get; set; }
         public long PriceAmount { get; set; }
+
+        public EvaluateChangeRequest() : base()
+        {
+
+        }
 
         public EvaluateChangeRequest(long inputAmountInCents, long priceAmountInCents)
             : base()
@@ -13,19 +18,19 @@ namespace ChangeMachine.Core.DataContract
             this.PriceAmount = priceAmountInCents;
         }
 
-        public override void ValidateRequest()
+        internal override void ValidateRequest()
         {
             if (this.InputAmount < 0)
             {
-                base.ErrorList.Add(new Error("InputAmount", "Input amout must be positive"));
+                base.ErrorList.Add(new Report("InputAmount", "Input amout must be positive", ReportType.ERROR));
             }
             if (this.PriceAmount < 0)
             {
-                base.ErrorList.Add(new Error("PriceAmount", "Price must be positive"));
+                base.ErrorList.Add(new Report("PriceAmount", "Price must be positive", ReportType.ERROR));
             }
             if (this.InputAmount < this.PriceAmount)
             {
-                base.ErrorList.Add(new Error("InputAmount", "Price is greater than amount provided."));
+                base.ErrorList.Add(new Report("InputAmount", "Price is greater than amount provided.", ReportType.ERROR));
             }
         }
     }

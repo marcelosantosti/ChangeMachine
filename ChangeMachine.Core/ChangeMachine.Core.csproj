@@ -39,11 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractRequest.cs" />
+    <Compile Include="Processor\BillChangeProcessor.cs" />
+    <Compile Include="Processor\CoinChangeProcessor.cs" />
+    <Compile Include="DataContract\AbstractRequest.cs" />
+    <Compile Include="DataContract\AbstractResponse.cs" />
     <Compile Include="DataContract\EvaluateChangeRequest.cs" />
     <Compile Include="DataContract\EvaluateChangeResponse.cs" />
     <Compile Include="ChangeMachineManager.cs" />
-    <Compile Include="Error.cs" />
+    <Compile Include="DataContract\Report.cs" />
+    <Compile Include="Processor\AbstractChangeProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
