@@ -10,6 +10,8 @@ namespace ChangeMachine.Core
     {
         public EvaluateChangeResponse EvaluateChange(EvaluateChangeRequest changeRequest)
         {
+            long totalChangeAmountInCents = 0;
+            List<Change> changeCollection = new List<Change>();
             EvaluateChangeResponse response = new EvaluateChangeResponse();
 
             if (changeRequest.IsValid == false)
@@ -22,18 +24,23 @@ namespace ChangeMachine.Core
             {
                 long changeAmountInCents = changeRequest.InputAmount - changeRequest.PriceAmount;
 
-                response.TotalAmountInCents = changeAmountInCents;
+                totalChangeAmountInCents = changeAmountInCents;
 
                 while (changeAmountInCents > 0)
                 {
                     AbstractChangeProcessor changeProcessor = ChangeProcessorFactory.Create(changeAmountInCents);
-
-                    List<long> changeCollection = new List<long>();
-                    changeAmountInCents = changeProcessor.EvaluateChangeOperation(changeCollection, changeAmountInCents);
-                    if (changeCollection.Any())
+                    if(changeProcessor == null)
                     {
-                        Change change = new Change(changeProcessor.ChangeType, changeCollection);
-                        response.ChangeCollection.Add(change);
+                        response.OperationReport.Add(new Report("", "Unable to process operation.", ReportType.ERROR));
+                        return response;
+                    }
+
+                    List<long> currentChangeCollection = new List<long>();
+                    changeAmountInCents = changeProcessor.EvaluateChangeOperation(currentChangeCollection, changeAmountInCents);
+                    if (currentChangeCollection.Any())
+                    {
+                        Change change = new Change(changeProcessor.ChangeType, currentChangeCollection);
+                        changeCollection.Add(change);
                     }
                 }
 
@@ -46,6 +53,12 @@ namespace ChangeMachine.Core
             catch (Exception ex)
             {
                 response.OperationReport.Add(new Report("", string.Format("Error processing request: {0}", ex.Message), ReportType.ERROR));
+            }
+
+            if(response.IsSuccess)
+            {
+                response.TotalAmountInCents = totalChangeAmountInCents;
+                response.ChangeCollection = changeCollection;
             }
 
             return response;

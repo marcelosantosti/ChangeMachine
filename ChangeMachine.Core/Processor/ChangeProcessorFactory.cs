@@ -21,8 +21,11 @@ namespace ChangeMachine.Core.Processor
 
         public static AbstractChangeProcessor Create(long remainingChange)
         {
-            return ChangeProcessorCollection.OrderByDescending(p => p.HighestValue)
-                        .Where(p => p.IsWithinRange(remainingChange)).First();
+            AbstractChangeProcessor processor = ChangeProcessorCollection.OrderByDescending(p => p.HighestValue)
+                        .Where(p => p.IsWithinRange(remainingChange)).FirstOrDefault();
+            
+            return processor;
+
         }
     }
 }

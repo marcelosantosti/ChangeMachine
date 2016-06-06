@@ -24,8 +24,7 @@ namespace ChangeMachine.Core.Processor
 
         public bool IsWithinRange(long changeAmount)
         {
-            return (changeAmount <= ValuableCollection.Max() &&
-                    changeAmount >= ValuableCollection.Min());
+            return (changeAmount >= ValuableCollection.Min());
         }
 
         public virtual long EvaluateChangeOperation(List<long> outputCollection, long changeAmountInCents)
