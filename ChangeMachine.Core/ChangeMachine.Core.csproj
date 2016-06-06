@@ -39,7 +39,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataContract\Change.cs" />
+    <Compile Include="Processor\BalinhaChangeProcessor.cs" />
     <Compile Include="Processor\BillChangeProcessor.cs" />
+    <Compile Include="Processor\ChangeProcessorFactory.cs" />
     <Compile Include="Processor\CoinChangeProcessor.cs" />
     <Compile Include="DataContract\AbstractRequest.cs" />
     <Compile Include="DataContract\AbstractResponse.cs" />
@@ -48,6 +51,7 @@
     <Compile Include="ChangeMachineManager.cs" />
     <Compile Include="DataContract\Report.cs" />
     <Compile Include="Processor\AbstractChangeProcessor.cs" />
+    <Compile Include="Processor\GoldChangeProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

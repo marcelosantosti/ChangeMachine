@@ -10,12 +10,11 @@ namespace ChangeMachine.Core.DataContract
     {
         public long TotalAmountInCents { get; set; }
 
-        public List<long> BillCollection { get; set; }
-        public List<long> CoinCollection { get; set; }
+        public List<Change> ChangeCollection { get; set; }
 
         public EvaluateChangeResponse() : base()
         {
-
+            this.ChangeCollection = new List<Change>();
         }
     }
 }

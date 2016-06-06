@@ -44,13 +44,13 @@ namespace ChangeMachine.UI.Desktop
             long priceAmountInCents = long.Parse(UxTextPriceAmountInCents.Text);
 
             EvaluateChangeRequest request = new EvaluateChangeRequest(inputAmountInCents, priceAmountInCents);
-            EvaluateChangeResponse change = changeMachineManager.EvaluateChange(request);
+            EvaluateChangeResponse changeResponse = changeMachineManager.EvaluateChange(request);
 
-            if (change.IsSuccess == false)
+            if (changeResponse.IsSuccess == false)
             {
                 UxListCoinCollection.Items.Clear();
 
-                foreach (Report error in change.OperationReport)
+                foreach (Report error in changeResponse.OperationReport)
                 {
                     UxListCoinCollection.Items.Add(string.Format("ERROR: {0}: {1}", error.Property, error.Message));
                 }
@@ -58,12 +58,14 @@ namespace ChangeMachine.UI.Desktop
             else
             {
                 UxListCoinCollection.Items.Clear();
-                UxListCoinCollection.Items.Add("Bills");
-                PopulateChangeList(UxListCoinCollection, change.BillCollection);
-                UxListCoinCollection.Items.Add("Coins");
-                PopulateChangeList(UxListCoinCollection, change.CoinCollection);
+                foreach(Change change in changeResponse.ChangeCollection)
+                {
+                    UxListCoinCollection.Items.Add(change.TypeName);
+                    PopulateChangeList(UxListCoinCollection, change.ChangeCollection);
+                }
 
-                UxListCoinCollection.Items.Add(string.Format("Total change: {0}", ConvertCentsToReal(change.TotalAmountInCents).ToString("C")));
+
+                UxListCoinCollection.Items.Add(string.Format("Total change: {0}", ConvertCentsToReal(changeResponse.TotalAmountInCents).ToString("C")));
             }
         }
 

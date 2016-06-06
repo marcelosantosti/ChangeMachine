@@ -6,21 +6,41 @@ using System.Threading.Tasks;
 
 namespace ChangeMachine.Core.Processor
 {
-    abstract class AbstractChangeProcessor
+    internal abstract class AbstractChangeProcessor
     {
-        protected long EvaluateChangeOperation(List<long> coinCollection, long changeAmountInCents, long[] availableCoinCollection)
+        public abstract string ChangeType { get; }
+
+        protected abstract long[] ValuableCollection { get; }
+
+        public long HighestValue
+        {
+            get { return ValuableCollection.Max(); }
+        }
+
+        public AbstractChangeProcessor()
+        {
+
+        }
+
+        public bool IsWithinRange(long changeAmount)
+        {
+            return (changeAmount <= ValuableCollection.Max() &&
+                    changeAmount >= ValuableCollection.Min());
+        }
+
+        public virtual long EvaluateChangeOperation(List<long> outputCollection, long changeAmountInCents)
         {
             if (changeAmountInCents == 0)
             {
                 return changeAmountInCents;
             }
 
-            foreach (long coin in availableCoinCollection.OrderByDescending(coin => coin))
+            foreach (long coin in ValuableCollection.OrderByDescending(coin => coin))
             {
                 long coinCount = changeAmountInCents / coin;
                 for (int i = 0; i < coinCount; i++)
                 {
-                    coinCollection.Add(coin);
+                    outputCollection.Add(coin);
                 }
                 changeAmountInCents = changeAmountInCents % coin;
             }

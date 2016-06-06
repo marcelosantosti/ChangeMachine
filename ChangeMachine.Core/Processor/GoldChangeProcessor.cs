@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace ChangeMachine.Core.Processor
 {
-    internal sealed class BillChangeProcessor : AbstractChangeProcessor
+    internal sealed class GoldChangeProcessor : AbstractChangeProcessor
     {
         protected override long[] ValuableCollection
         {
             get
             {
-                return new long[] { 10000, 5000, 2000, 1000, 500, 200 };
+                return new long[]{ 100000, 50000, 20000 };
             }
         }
 
         public override string ChangeType
         {
-            get { return "Bill"; }
+            get { return "Gold"; }
         }
 
-        public BillChangeProcessor()
+        public GoldChangeProcessor()
             : base()
         {
         }
