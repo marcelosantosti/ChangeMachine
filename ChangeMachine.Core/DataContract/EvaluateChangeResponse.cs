@@ -16,5 +16,7 @@ namespace ChangeMachine.Core.DataContract
         {
             this.ChangeCollection = new List<Change>();
         }
+
+
     }
 }

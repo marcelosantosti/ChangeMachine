@@ -1,17 +1,24 @@
 ﻿using ChangeMachine.Core.DataContract;
+using Dlp.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace ChangeMachine.Core.Util
 {
     internal class Logger
     {
-        private Logger logger;
+        private const string LOG_PATH = @"C:\Logs\";
+        private const string LOG_FILE = @"ChangeMachine.log";
 
-        public Logger Instance
+        private static Logger logger;
+        private StreamWriter logWriter;
+
+        public static Logger Instance
         {
             get
             {
@@ -23,48 +30,73 @@ namespace ChangeMachine.Core.Util
             }
         }
 
-        private void Log(string message, string method)
+        public Logger()
         {
 
         }
 
-        public void Info(string method, EvaluateChangeResponse response)
+        private void Log(string message)
         {
-            string message = string.Format("Response: IsSuccess:{0}, TotalAmountInCents:{1}",
-                response.IsSuccess, response.TotalAmountInCents);
-
-            if(response.OperationReport.Any())
+            if (Directory.Exists(LOG_PATH) == false)
             {
-                string opReport = "";
-                foreach(Report report in response.OperationReport)
-                {
-                    opReport += string.Format("{0}/t/t{1}:{2}", Environment.NewLine, report.Type, report.Message);
-                }
+                Directory.CreateDirectory(LOG_PATH);
             }
 
-            if (response.ChangeCollection.Any())
-            {
-                List<Coin> queryGroupCoins = response.ChangeCollection.GroupBy(coin => coin)
-                    .Select(coin => new Coin(coin.Key, coin.Count()))
-                    .OrderByDescending(coin => coin.Amount).ToList();
+            File.AppendAllText(Path.Combine(LOG_PATH, LOG_FILE), string.Format("{0}{1}", message, Environment.NewLine));
+        }
 
-                string changeCollection = "";
-                foreach (Change change in response.ChangeCollection)
-                {
-                    changeCollection += string.Format("{0}/t/t{1}:{2}", Environment.NewLine, change.TypeName,
-                        change.ChangeCollection);
-                }
+        private void Log(string method, string message)
+        {
+            string logMessage = string.Format("{0} {1} {2}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), method, message);
+            this.Log(logMessage);
+        }
+
+        private string FormatMessage(string level, string message, object obj = null)
+        {
+            if (obj == null)
+            {
+                return string.Format("{0}: {1}", level, message);
+            }
+
+            string serializedObject = Serializer.NewtonsoftSerialize(obj);
+            string objType = string.Empty;
+
+            if (obj is AbstractRequest)
+            {
+                objType = "Request";
+            }
+            else if (obj is AbstractResponse)
+            {
+                objType = "Response";
+            }
+            else if (obj is Exception)
+            {
+                objType = "EXCEPTION";
+            }
+
+            if(string.IsNullOrEmpty(objType))
+            {
+                return string.Format("{0}: {1} [{2}]", level, message, serializedObject); 
+            }
+            else
+            {
+                return string.Format("{0}: [{1}] {2} [{3}]", level, objType, message, serializedObject); 
             }
         }
 
-        public void Info(string method, AbstractRequest request)
+        public void Info(string message, object obj, [CallerMemberName] string memberName = "")
         {
-
+            this.Log(memberName, FormatMessage("INFO", message, obj));
         }
 
-        public void Error(string message, Exception exception = null)
+        public void Info(object obj, [CallerMemberName] string memberName = "")
         {
+            this.Log(memberName, FormatMessage("INFO", "", obj));
+        }
 
+        public void Error(string message, object obj = null, [CallerMemberName] string memberName = "")
+        {
+            this.Log(memberName, this.FormatMessage("ERROR", message, obj));
         }
     }
 }
