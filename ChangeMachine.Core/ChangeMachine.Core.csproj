@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataContract\Change.cs" />
+    <Compile Include="Logger\LoggerFactory.cs" />
+    <Compile Include="Logger\LogManager.cs" />
     <Compile Include="Processor\BalinhaChangeProcessor.cs" />
     <Compile Include="Processor\BillChangeProcessor.cs" />
     <Compile Include="Processor\ChangeProcessorFactory.cs" />
@@ -62,7 +64,9 @@
     <Compile Include="Processor\AbstractChangeProcessor.cs" />
     <Compile Include="Processor\GoldChangeProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\Logger.cs" />
+    <Compile Include="Logger\AbstractLogger.cs" />
+    <Compile Include="Logger\EventLogger.cs" />
+    <Compile Include="Logger\FileLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
